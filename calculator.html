@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>House Buying Financial Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f0f9f4 0%, #e6f3ff 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #2d3748;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4a90e2 0%, #2d5aa0 100%);
+            padding: 30px;
+            text-align: center;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            padding: 25px;
+            background: #f8fafc;
+            border-radius: 15px;
+            border-left: 5px solid #10b981;
+        }
+
+        .section h2 {
+            color: #1a365d;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .form-group input[type="number"], .form-group input[type="range"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input[type="number"]:focus {
+            outline: none;
+            border-color: #4a90e2;
+        }
+
+        .slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: #e2e8f0;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4a90e2;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4a90e2;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .slider-value {
+            text-align: center;
+            font-weight: 600;
+            color: #4a90e2;
+            margin-top: 5px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .result-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            border-top: 4px solid #10b981;
+        }
+
+        .result-card h3 {
+            color: #1a365d;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .result-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #10b981;
+            margin-bottom: 10px;
+        }
+
+        .result-value.negative {
+            color: #e53e3e;
+        }
+
+        .result-description {
+            color: #718096;
+            font-size: 0.9rem;
+        }
+
+        .scenario-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .scenario-card:hover {
+            border-color: #4a90e2;
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.15);
+        }
+
+        .scenario-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .scenario-title {
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .remove-btn {
+            background: #fed7d7;
+            color: #c53030;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .add-scenario-btn {
+            background: linear-gradient(135deg, #38a169 0%, #2f855a 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            transition: transform 0.2s ease;
+        }
+
+        .add-scenario-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .input-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .input-group {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏠 House Buying Calculator</h1>
+            <p>Plan your home purchase with confidence</p>
+        </div>
+
+        <div class="main-content">
+            <!-- Income & Expenses -->
+            <div class="section">
+                <h2>💰 Your Finances</h2>
+                <div class="grid">
+                    <div>
+                        <div class="form-group">
+                            <label for="grossIncome">Monthly Gross Income</label>
+                            <input type="number" id="grossIncome" value="18000" />
+                        </div>
+                        <div class="form-group">
+                            <label for="takeHome">Monthly Take-Home</label>
+                            <input type="number" id="takeHome" value="12960" />
+                        </div>
+                        <div class="form-group">
+                            <label for="daycare">Daycare</label>
+                            <div>
+                                <input type="range" id="daycare" class="slider" min="0" max="4000" value="2000" />
+                                <div class="slider-value">$<span id="daycareValue">2000</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="form-group">
+                            <label for="bills">Other Bills</label>
+                            <div>
+                                <input type="range" id="bills" class="slider" min="0" max="2000" value="1000" />
+                                <div class="slider-value">$<span id="billsValue">1000</span></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="loans">Loan Payments</label>
+                            <div>
+                                <input type="range" id="loans" class="slider" min="0" max="2000" value="1100" />
+                                <div class="slider-value">$<span id="loansValue">1100</span></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="savings">Savings Available</label>
+                            <input type="number" id="savings" value="30000" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Current House Sale -->
+            <div class="section">
+                <h2>🏡 Current House Sale</h2>
+                <div class="form-group">
+                    <label for="salePrice">Expected Sale Price</label>
+                    <div>
+                        <input type="range" id="salePrice" class="slider" min="400000" max="500000" value="435000" />
+                        <div class="slider-value">$<span id="salePriceValue">435000</span></div>
+                    </div>
+                </div>
+                <div class="results-grid">
+                    <div class="result-card">
+                        <h3>Net Proceeds</h3>
+                        <div class="result-value" id="netProceeds">$43,051</div>
+                        <div class="result-description">After mortgage payoff & closing costs</div>
+                    </div>
+                    <div class="result-card">
+                        <h3>Total Down Payment Available</h3>
+                        <div class="result-value" id="totalDownPayment">$73,051</div>
+                        <div class="result-description">Sale proceeds + savings</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Affordability Summary -->
+            <div class="section">
+                <h2>📊 What You Can Afford</h2>
+                <div class="results-grid">
+                    <div class="result-card">
+                        <h3>Monthly Cash Available</h3>
+                        <div class="result-value" id="monthlyAvailable">$8,860</div>
+                        <div class="result-description">Take-home minus expenses</div>
+                    </div>
+                    <div class="result-card">
+                        <h3>Max Payment (Lender)</h3>
+                        <div class="result-value" id="maxPaymentLender">$5,040</div>
+                        <div class="result-description">28% of gross income</div>
+                    </div>
+                    <div class="result-card">
+                        <h3>Max House Price</h3>
+                        <div class="result-value" id="maxHousePrice">$520,000</div>
+                        <div class="result-description">Based on payment capacity</div>
+                    </div>
+                    <div class="result-card">
+                        <h3>Recommended Budget</h3>
+                        <div class="result-value" id="recommendedBudget">$480,000</div>
+                        <div class="result-description">Leaves comfortable cushion</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- House Scenarios -->
+            <div class="section">
+                <h2>🏠 Compare Houses</h2>
+                <button class="add-scenario-btn" onclick="addScenario()">+ Add House</button>
+                <div id="scenarios"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let scenarioCount = 0;
+
+        // Simple mortgage payment calculation
+        function calculateMonthlyPayment(principal, rate, years) {
+            const monthlyRate = rate / 100 / 12;
+            const numPayments = years * 12;
+            return principal * (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) / 
+                   (Math.pow(1 + monthlyRate, numPayments) - 1);
+        }
+
+        // Calculate house costs (taxes, insurance, PMI)
+        function calculateHouseCosts(price, downPercent) {
+            const monthlyTax = (price * 0.0115) / 12; // 1.15% property tax
+            const monthlyInsurance = (price * 0.003) / 12; // 0.3% insurance
+            const monthlyPMI = downPercent < 20 ? (price * 0.005) / 12 : 0; // 0.5% PMI
+            return { tax: monthlyTax, insurance: monthlyInsurance, pmi: monthlyPMI };
+        }
+
+        // Update slider display
+        function updateSlider(sliderId, valueId) {
+            const slider = document.getElementById(sliderId);
+            const valueSpan = document.getElementById(valueId);
+            valueSpan.textContent = Number(slider.value).toLocaleString();
+        }
+
+        // Calculate current house sale
+        function calculateSale() {
+            const salePrice = Number(document.getElementById('salePrice').value);
+            const mortgageBalance = 364000; // From your statement
+            const closingCosts = salePrice * 0.065; // ~6.5%
+            const netProceeds = salePrice - mortgageBalance - closingCosts;
+            
+            const savings = Number(document.getElementById('savings').value);
+            const totalDown = netProceeds + savings;
+            
+            document.getElementById('netProceeds').textContent = '$' + Math.round(netProceeds).toLocaleString();
+            document.getElementById('totalDownPayment').textContent = '$' + Math.round(totalDown).toLocaleString();
+            
+            return { netProceeds, totalDown };
+        }
+
+        // Calculate affordability
+        function calculateAffordability() {
+            const grossIncome = Number(document.getElementById('grossIncome').value);
+            const takeHome = Number(document.getElementById('takeHome').value);
+            const daycare = Number(document.getElementById('daycare').value);
+            const bills = Number(document.getElementById('bills').value);
+            const loans = Number(document.getElementById('loans').value);
+            
+            const monthlyAvailable = takeHome - daycare - bills - loans;
+            const maxPaymentLender = grossIncome * 0.28; // 28% rule
+            
+            // Calculate max house price this payment can support
+            const interestRate = 6.75;
+            const downPercent = 15; // Assume 15% down
+            
+            // Estimate 75% of payment goes to P&I, 25% to taxes/insurance/PMI
+            const maxPI = maxPaymentLender * 0.75;
+            const maxLoan = maxPI * (Math.pow(1 + interestRate/100/12, 360) - 1) / 
+                          ((interestRate/100/12) * Math.pow(1 + interestRate/100/12, 360));
+            const maxPrice = maxLoan / (1 - downPercent/100);
+            
+            const recommendedBudget = maxPrice * 0.9; // 90% for cushion
+            
+            document.getElementById('monthlyAvailable').textContent = '$' + monthlyAvailable.toLocaleString();
+            document.getElementById('maxPaymentLender').textContent = '$' + Math.round(maxPaymentLender).toLocaleString();
+            document.getElementById('maxHousePrice').textContent = '$' + Math.round(maxPrice).toLocaleString();
+            document.getElementById('recommendedBudget').textContent = '$' + Math.round(recommendedBudget).toLocaleString();
+            
+            return { monthlyAvailable, maxPaymentLender };
+        }
+
+        // Add house scenario
+        function addScenario() {
+            scenarioCount++;
+            const scenarioHTML = `
+                <div class="scenario-card" id="scenario-${scenarioCount}">
+                    <div class="scenario-header">
+                        <span class="scenario-title">House ${scenarioCount}</span>
+                        <button class="remove-btn" onclick="removeScenario(${scenarioCount})">Remove</button>
+                    </div>
+                    <div class="input-group">
+                        <div class="form-group">
+                            <label>Price</label>
+                            <input type="number" id="price-${scenarioCount}" value="450000" onchange="calculateScenario(${scenarioCount})" />
+                        </div>
+                        <div class="form-group">
+                            <label>Down %</label>
+                            <input type="number" id="down-${scenarioCount}" value="15" min="3" max="25" onchange="calculateScenario(${scenarioCount})" />
+                        </div>
+                        <div class="form-group">
+                            <label>Rate %</label>
+                            <input type="number" id="rate-${scenarioCount}" value="6.75" step="0.25" min="4" max="9" onchange="calculateScenario(${scenarioCount})" />
+                        </div>
+                    </div>
+                    <div class="results-grid" id="results-${scenarioCount}"></div>
+                </div>
+            `;
+            
+            document.getElementById('scenarios').insertAdjacentHTML('beforeend', scenarioHTML);
+            calculateScenario(scenarioCount);
+        }
+
+        // Remove scenario
+        function removeScenario(id) {
+            document.getElementById(`scenario-${id}`).remove();
+        }
+
+        // Calculate scenario
+        function calculateScenario(id) {
+            const price = Number(document.getElementById(`price-${id}`).value);
+            const downPercent = Number(document.getElementById(`down-${id}`).value);
+            const rate = Number(document.getElementById(`rate-${id}`).value);
+            
+            const { totalDown } = calculateSale();
+            const { monthlyAvailable } = calculateAffordability();
+            
+            const downPaymentNeeded = price * (downPercent / 100);
+            const loanAmount = price - downPaymentNeeded;
+            const monthlyPI = calculateMonthlyPayment(loanAmount, rate, 30);
+            const houseCosts = calculateHouseCosts(price, downPercent);
+            const totalMonthly = monthlyPI + houseCosts.tax + houseCosts.insurance + houseCosts.pmi;
+            
+            const cashShortfall = downPaymentNeeded - totalDown;
+            const monthlyLeftOver = monthlyAvailable - totalMonthly;
+            
+            let affordability = 'comfortable';
+            if (monthlyLeftOver < 1000) affordability = 'tight';
+            if (monthlyLeftOver < 0) affordability = 'unaffordable';
+            
+            const resultsHTML = `
+                <div class="result-card">
+                    <h3>Monthly Payment</h3>
+                    <div class="result-value">$${Math.round(totalMonthly).toLocaleString()}</div>
+                    <div class="result-description">
+                        P&I: $${Math.round(monthlyPI).toLocaleString()}<br>
+                        Tax: $${Math.round(houseCosts.tax).toLocaleString()}<br>
+                        Insurance: $${Math.round(houseCosts.insurance).toLocaleString()}<br>
+                        ${houseCosts.pmi > 0 ? `PMI: $${Math.round(houseCosts.pmi).toLocaleString()}` : 'No PMI'}
+                    </div>
+                </div>
+                <div class="result-card">
+                    <h3>Down Payment</h3>
+                    <div class="result-value">$${Math.round(downPaymentNeeded).toLocaleString()}</div>
+                    <div class="result-description">${downPercent}% of price</div>
+                </div>
+                <div class="result-card">
+                    <h3>Cash Needed</h3>
+                    <div class="result-value ${cashShortfall > 0 ? 'negative' : ''}">
+                        ${cashShortfall > 0 ? '+' : ''}$${Math.round(Math.abs(cashShortfall)).toLocaleString()}
+                    </div>
+                    <div class="result-description">${cashShortfall > 0 ? 'Additional cash needed' : 'Extra cash available'}</div>
+                </div>
+                <div class="result-card">
+                    <h3>Monthly Left Over</h3>
+                    <div class="result-value ${monthlyLeftOver < 0 ? 'negative' : ''}">$${Math.round(monthlyLeftOver).toLocaleString()}</div>
+                    <div class="result-description">After all expenses (${affordability})</div>
+                </div>
+            `;
+            
+            document.getElementById(`results-${id}`).innerHTML = resultsHTML;
+        }
+
+        // Calculate everything
+        function calculateAll() {
+            calculateSale();
+            calculateAffordability();
+            
+            // Update existing scenarios
+            for (let i = 1; i <= scenarioCount; i++) {
+                if (document.getElementById(`scenario-${i}`)) {
+                    calculateScenario(i);
+                }
+            }
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            // Sliders
+            const sliders = ['daycare', 'bills', 'loans', 'salePrice'];
+            sliders.forEach(slider => {
+                document.getElementById(slider).addEventListener('input', () => {
+                    updateSlider(slider, slider + 'Value');
+                    calculateAll();
+                });
+            });
+            
+            // Number inputs
+            ['grossIncome', 'takeHome', 'savings'].forEach(input => {
+                document.getElementById(input).addEventListener('input', calculateAll);
+            });
+        }
+
+        // Initialize
+        function init() {
+            setupEventListeners();
+            
+            // Set initial slider values
+            updateSlider('daycare', 'daycareValue');
+            updateSlider('bills', 'billsValue');
+            updateSlider('loans', 'loansValue');
+            updateSlider('salePrice', 'salePriceValue');
+            
+            calculateAll();
+            
+            // Add first scenario
+            addScenario();
+        }
+
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
